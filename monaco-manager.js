@@ -51,7 +51,7 @@ function updateMonacoTheme() {
                 'editor.lineHighlightBorder': '#4c566a88'
             }
         });
-        
+
         monaco.editor.defineTheme('custom-light', {
             base: 'vs',
             inherit: true,
@@ -72,19 +72,19 @@ function updateMonacoTheme() {
 // Create a Monaco Editor instance
 async function createMonacoEditor(containerId, options = {}) {
     await window.monacoReady;
-    
+
     const container = document.getElementById(containerId);
     if (!container) return null;
-    
+
     // Destroy existing editor if present
     if (monacoEditors[containerId]) {
         monacoEditors[containerId].dispose();
         delete monacoEditors[containerId];
     }
-    
+
     const language = languageMappings[containerId] || options.language || 'plaintext';
     const readOnly = options.readOnly || false;
-    
+
     const editorOptions = {
         value: options.value || '',
         language: language,
@@ -115,10 +115,10 @@ async function createMonacoEditor(containerId, options = {}) {
         folding: true,
         ...options.editorOptions
     };
-    
+
     const editor = monaco.editor.create(container, editorOptions);
     monacoEditors[containerId] = editor;
-    
+
     // Force layout and remeasure fonts after a short delay
     setTimeout(() => {
         editor.layout();
@@ -126,7 +126,7 @@ async function createMonacoEditor(containerId, options = {}) {
             monaco.editor.remeasureFonts();
         }
     }, 200);
-    
+
     return editor;
 }
 
@@ -193,22 +193,22 @@ let diffEditorModifiedModel = null;
 
 async function createDiffEditor(containerId, options = {}) {
     await window.monacoReady;
-    
+
     const container = document.getElementById(containerId);
     if (!container) return null;
-    
+
     // Dispose existing diff editor
     if (window.monacoDiffEditor) {
         window.monacoDiffEditor.dispose();
     }
-    
+
     const language = options.language || 'plaintext';
     const renderSideBySide = !options.inline;
-    
+
     // Create models
     diffEditorOriginalModel = monaco.editor.createModel(options.original || '', language);
     diffEditorModifiedModel = monaco.editor.createModel(options.modified || '', language);
-    
+
     // Create diff editor
     const diffEditor = monaco.editor.createDiffEditor(container, {
         theme: getMonacoTheme(),
@@ -235,14 +235,14 @@ async function createDiffEditor(containerId, options = {}) {
         renderMarginRevertIcon: true,
         ...options.editorOptions
     });
-    
+
     diffEditor.setModel({
         original: diffEditorOriginalModel,
         modified: diffEditorModifiedModel
     });
-    
+
     window.monacoDiffEditor = diffEditor;
-    
+
     return diffEditor;
 }
 
@@ -273,9 +273,9 @@ function getDiffStats() {
     if (!window.monacoDiffEditor) return null;
     const lineChanges = window.monacoDiffEditor.getLineChanges();
     if (!lineChanges) return { additions: 0, deletions: 0, changes: 0 };
-    
+
     let additions = 0, deletions = 0, changes = 0;
-    
+
     lineChanges.forEach(change => {
         if (change.originalStartLineNumber <= change.originalEndLineNumber) {
             deletions += change.originalEndLineNumber - change.originalStartLineNumber + 1;
@@ -285,7 +285,7 @@ function getDiffStats() {
         }
         changes++;
     });
-    
+
     return { additions, deletions, changes };
 }
 
@@ -293,10 +293,10 @@ function getDiffStats() {
 // Initialize editors for a specific tool
 async function initializeToolEditors(toolId) {
     await window.monacoReady;
-    
+
     // Clean up previous editors
     disposeAllEditors();
-    
+
     // Handle diff editor specially
     if (toolId === 'text-diff') {
         setTimeout(async () => {
@@ -309,7 +309,7 @@ async function initializeToolEditors(toolId) {
         }, 50);
         return;
     }
-    
+
     // Tool-specific editor configurations
     const editorConfigs = {
         'json-format': [
@@ -350,10 +350,10 @@ async function initializeToolEditors(toolId) {
             { id: 'jwt-payload', readOnly: true }
         ]
     };
-    
+
     const configs = editorConfigs[toolId];
     if (!configs) return;
-    
+
     // Small delay to ensure DOM is ready
     setTimeout(async () => {
         for (const config of configs) {
@@ -373,6 +373,16 @@ window.monacoManager = {
     disposeAll: disposeAllEditors,
     getLanguageFromSelection: getLanguageFromSelection,
     editors: monacoEditors,
+    layoutAll: () => {
+        Object.values(monacoEditors).forEach(editor => {
+            if (editor && typeof editor.layout === 'function') {
+                editor.layout();
+            }
+        });
+        if (window.monacoDiffEditor && typeof window.monacoDiffEditor.layout === 'function') {
+            window.monacoDiffEditor.layout();
+        }
+    },
     // Diff Editor functions
     createDiffEditor: createDiffEditor,
     getDiffValues: getDiffEditorValues,

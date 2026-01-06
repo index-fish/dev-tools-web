@@ -13,39 +13,45 @@ const toolTemplates = {
                 <p class="card-description">JSON 格式化、压缩、校验工具 - 支持语法高亮</p>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输入 JSON</label>
-                        <span class="language-badge">JSON</span>
+                <div class="top-toolbar">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="formatJson()">✨ 格式化</button>
+                        <button class="btn btn-secondary" onclick="compressJson()">📦 压缩</button>
+                        <button class="btn btn-outline" onclick="validateJson()">✅ 校验</button>
+                        <button class="btn btn-outline" onclick="clearMonacoTool('json')">🗑️ 清空</button>
                     </div>
-                    <div id="json-input" class="monaco-container"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
+                    <div class="toolbar-separator"></div>
+                    <div class="form-group-inline">
                         <label>缩进</label>
-                        <select id="json-indent" class="input-select">
-                            <option value="2">2 空格</option>
+                        <select id="json-indent" class="input-select-small">
+                            <option value="2" selected>2 空格</option>
                             <option value="4">4 空格</option>
                             <option value="tab">Tab</option>
                         </select>
                     </div>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="formatJson()">✨ 格式化</button>
-                    <button class="btn btn-secondary" onclick="compressJson()">📦 压缩</button>
-                    <button class="btn btn-outline" onclick="validateJson()">✅ 校验</button>
-                    <button class="btn btn-outline" onclick="clearMonacoTool('json')">🗑️ 清空</button>
-                </div>
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输出结果</label>
-                        <span class="language-badge">JSON</span>
+
+                <div class="split-view">
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输入 JSON</label>
+                            <span class="language-badge">JSON</span>
+                        </div>
+                        <div id="json-input" class="monaco-container"></div>
                     </div>
-                    <div class="editor-wrapper">
-                        <div id="json-output" class="monaco-container output"></div>
-                        <button class="copy-btn" onclick="copyFromMonaco('json-output')">📋 复制</button>
+                    <div class="resizer" id="json-resizer"></div>
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输出结果</label>
+                            <span class="language-badge">JSON</span>
+                        </div>
+                        <div class="editor-wrapper">
+                            <div id="json-output" class="monaco-container output"></div>
+                            <button class="copy-btn" onclick="copyFromMonaco('json-output')">📋 复制</button>
+                        </div>
                     </div>
                 </div>
+                <div class="resizer-v"></div>
             </div>
         </div>
     `,
@@ -57,27 +63,34 @@ const toolTemplates = {
                 <p class="card-description">JSON 字符串转义与反转义 - 支持语法高亮</p>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输入文本</label>
-                        <span class="language-badge">JSON</span>
-                    </div>
-                    <div id="json-escape-input" class="monaco-container"></div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="jsonEscape()">🔒 转义</button>
-                    <button class="btn btn-secondary" onclick="jsonUnescape()">🔓 反转义</button>
-                </div>
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输出结果</label>
-                        <span class="language-badge">JSON</span>
-                    </div>
-                    <div class="editor-wrapper">
-                        <div id="json-escape-output" class="monaco-container output"></div>
-                        <button class="copy-btn" onclick="copyFromMonaco('json-escape-output')">📋 复制</button>
+                <div class="top-toolbar">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="jsonEscape()">🔒 转义</button>
+                        <button class="btn btn-secondary" onclick="jsonUnescape()">🔓 反转义</button>
                     </div>
                 </div>
+
+                <div class="split-view">
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输入文本</label>
+                            <span class="language-badge">JSON</span>
+                        </div>
+                        <div id="json-escape-input" class="monaco-container"></div>
+                    </div>
+                    <div class="resizer"></div>
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输出结果</label>
+                            <span class="language-badge">JSON</span>
+                        </div>
+                        <div class="editor-wrapper">
+                            <div id="json-escape-output" class="monaco-container output"></div>
+                            <button class="copy-btn" onclick="copyFromMonaco('json-escape-output')">📋 复制</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="resizer-v"></div>
             </div>
         </div>
     `,
@@ -89,17 +102,14 @@ const toolTemplates = {
                 <p class="card-description">根据 JSON 自动生成各种语言的实体类 - 支持语法高亮</p>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输入 JSON</label>
-                        <span class="language-badge">JSON</span>
+                <div class="top-toolbar">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="jsonToClass()">🔄 生成</button>
                     </div>
-                    <div id="json-class-input" class="monaco-container"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
+                    <div class="toolbar-separator"></div>
+                    <div class="form-group-inline">
                         <label>目标语言</label>
-                        <select id="json-class-lang" class="input-select" onchange="updateOutputLanguage()">
+                        <select id="json-class-lang" class="input-select-small" onchange="updateOutputLanguage()">
                             <option value="typescript">TypeScript</option>
                             <option value="java">Java</option>
                             <option value="csharp">C#</option>
@@ -107,24 +117,33 @@ const toolTemplates = {
                             <option value="go">Go</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group-inline">
                         <label>类名</label>
-                        <input type="text" id="json-class-name" class="input-field" value="MyClass">
+                        <input type="text" id="json-class-name" class="input-field" style="width: 120px; padding: 0.35rem 0.6rem; font-size: 0.75rem;" value="MyClass">
                     </div>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="jsonToClass()">🔄 生成</button>
-                </div>
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>生成结果</label>
-                        <span id="json-class-lang-badge" class="language-badge">TypeScript</span>
+
+                <div class="split-view">
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输入 JSON</label>
+                            <span class="language-badge">JSON</span>
+                        </div>
+                        <div id="json-class-input" class="monaco-container"></div>
                     </div>
-                    <div class="editor-wrapper">
-                        <div id="json-class-output" class="monaco-container output large"></div>
-                        <button class="copy-btn" onclick="copyFromMonaco('json-class-output')">📋 复制</button>
+                    <div class="resizer"></div>
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>生成结果</label>
+                            <span id="json-class-lang-badge" class="language-badge">TypeScript</span>
+                        </div>
+                        <div class="editor-wrapper">
+                            <div id="json-class-output" class="monaco-container output"></div>
+                            <button class="copy-btn" onclick="copyFromMonaco('json-class-output')">📋 复制</button>
+                        </div>
                     </div>
                 </div>
+                <div class="resizer-v"></div>
             </div>
         </div>
     `,
@@ -139,27 +158,34 @@ const toolTemplates = {
                 <p class="card-description">HTML 代码格式化与压缩 - 支持语法高亮</p>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输入 HTML</label>
-                        <span class="language-badge">HTML</span>
-                    </div>
-                    <div id="html-input" class="monaco-container"></div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="formatHtml()">✨ 格式化</button>
-                    <button class="btn btn-secondary" onclick="compressHtml()">📦 压缩</button>
-                </div>
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输出结果</label>
-                        <span class="language-badge">HTML</span>
-                    </div>
-                    <div class="editor-wrapper">
-                        <div id="html-output" class="monaco-container output"></div>
-                        <button class="copy-btn" onclick="copyFromMonaco('html-output')">📋 复制</button>
+                <div class="top-toolbar">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="formatHtml()">✨ 格式化</button>
+                        <button class="btn btn-secondary" onclick="compressHtml()">📦 压缩</button>
                     </div>
                 </div>
+
+                <div class="split-view">
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输入 HTML</label>
+                            <span class="language-badge">HTML</span>
+                        </div>
+                        <div id="html-input" class="monaco-container"></div>
+                    </div>
+                    <div class="resizer"></div>
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输出结果</label>
+                            <span class="language-badge">HTML</span>
+                        </div>
+                        <div class="editor-wrapper">
+                            <div id="html-output" class="monaco-container output"></div>
+                            <button class="copy-btn" onclick="copyFromMonaco('html-output')">📋 复制</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="resizer-v"></div>
             </div>
         </div>
     `,
@@ -171,27 +197,34 @@ const toolTemplates = {
                 <p class="card-description">JavaScript 代码格式化与压缩 - 支持语法高亮</p>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输入 JavaScript</label>
-                        <span class="language-badge">JavaScript</span>
-                    </div>
-                    <div id="js-input" class="monaco-container"></div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="formatJs()">✨ 格式化</button>
-                    <button class="btn btn-secondary" onclick="compressJs()">📦 压缩</button>
-                </div>
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输出结果</label>
-                        <span class="language-badge">JavaScript</span>
-                    </div>
-                    <div class="editor-wrapper">
-                        <div id="js-output" class="monaco-container output"></div>
-                        <button class="copy-btn" onclick="copyFromMonaco('js-output')">📋 复制</button>
+                <div class="top-toolbar">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="formatJs()">✨ 格式化</button>
+                        <button class="btn btn-secondary" onclick="compressJs()">📦 压缩</button>
                     </div>
                 </div>
+
+                <div class="split-view">
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输入 JavaScript</label>
+                            <span class="language-badge">JavaScript</span>
+                        </div>
+                        <div id="js-input" class="monaco-container"></div>
+                    </div>
+                    <div class="resizer"></div>
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输出结果</label>
+                            <span class="language-badge">JavaScript</span>
+                        </div>
+                        <div class="editor-wrapper">
+                            <div id="js-output" class="monaco-container output"></div>
+                            <button class="copy-btn" onclick="copyFromMonaco('js-output')">📋 复制</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="resizer-v"></div>
             </div>
         </div>
     `,
@@ -203,27 +236,34 @@ const toolTemplates = {
                 <p class="card-description">CSS 代码格式化与压缩 - 支持语法高亮</p>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输入 CSS</label>
-                        <span class="language-badge">CSS</span>
-                    </div>
-                    <div id="css-input" class="monaco-container"></div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="formatCss()">✨ 格式化</button>
-                    <button class="btn btn-secondary" onclick="compressCss()">📦 压缩</button>
-                </div>
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输出结果</label>
-                        <span class="language-badge">CSS</span>
-                    </div>
-                    <div class="editor-wrapper">
-                        <div id="css-output" class="monaco-container output"></div>
-                        <button class="copy-btn" onclick="copyFromMonaco('css-output')">📋 复制</button>
+                <div class="top-toolbar">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="formatCss()">✨ 格式化</button>
+                        <button class="btn btn-secondary" onclick="compressCss()">📦 压缩</button>
                     </div>
                 </div>
+
+                <div class="split-view">
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输入 CSS</label>
+                            <span class="language-badge">CSS</span>
+                        </div>
+                        <div id="css-input" class="monaco-container"></div>
+                    </div>
+                    <div class="resizer"></div>
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输出结果</label>
+                            <span class="language-badge">CSS</span>
+                        </div>
+                        <div class="editor-wrapper">
+                            <div id="css-output" class="monaco-container output"></div>
+                            <button class="copy-btn" onclick="copyFromMonaco('css-output')">📋 复制</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="resizer-v"></div>
             </div>
         </div>
     `,
@@ -235,27 +275,34 @@ const toolTemplates = {
                 <p class="card-description">XML 代码格式化与压缩 - 支持语法高亮</p>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输入 XML</label>
-                        <span class="language-badge">XML</span>
-                    </div>
-                    <div id="xml-input" class="monaco-container"></div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="formatXml()">✨ 格式化</button>
-                    <button class="btn btn-secondary" onclick="compressXml()">📦 压缩</button>
-                </div>
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输出结果</label>
-                        <span class="language-badge">XML</span>
-                    </div>
-                    <div class="editor-wrapper">
-                        <div id="xml-output" class="monaco-container output"></div>
-                        <button class="copy-btn" onclick="copyFromMonaco('xml-output')">📋 复制</button>
+                <div class="top-toolbar">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="formatXml()">✨ 格式化</button>
+                        <button class="btn btn-secondary" onclick="compressXml()">📦 压缩</button>
                     </div>
                 </div>
+
+                <div class="split-view">
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输入 XML</label>
+                            <span class="language-badge">XML</span>
+                        </div>
+                        <div id="xml-input" class="monaco-container"></div>
+                    </div>
+                    <div class="resizer"></div>
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输出结果</label>
+                            <span class="language-badge">XML</span>
+                        </div>
+                        <div class="editor-wrapper">
+                            <div id="xml-output" class="monaco-container output"></div>
+                            <button class="copy-btn" onclick="copyFromMonaco('xml-output')">📋 复制</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="resizer-v"></div>
             </div>
         </div>
     `,
@@ -267,17 +314,15 @@ const toolTemplates = {
                 <p class="card-description">SQL 语句格式化 - 支持语法高亮</p>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输入 SQL</label>
-                        <span class="language-badge">SQL</span>
+                <div class="top-toolbar">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="formatSql()">✨ 格式化</button>
+                        <button class="btn btn-secondary" onclick="compressSql()">📦 压缩</button>
                     </div>
-                    <div id="sql-input" class="monaco-container"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
+                    <div class="toolbar-separator"></div>
+                    <div class="form-group-inline">
                         <label>数据库类型</label>
-                        <select id="sql-dialect" class="input-select">
+                        <select id="sql-dialect" class="input-select-small">
                             <option value="sql">标准 SQL</option>
                             <option value="mysql">MySQL</option>
                             <option value="postgresql">PostgreSQL</option>
@@ -285,20 +330,28 @@ const toolTemplates = {
                         </select>
                     </div>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="formatSql()">✨ 格式化</button>
-                    <button class="btn btn-secondary" onclick="compressSql()">📦 压缩</button>
-                </div>
-                <div class="form-group">
-                    <div class="editor-label">
-                        <label>输出结果</label>
-                        <span class="language-badge">SQL</span>
+
+                <div class="split-view">
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输入 SQL</label>
+                            <span class="language-badge">SQL</span>
+                        </div>
+                        <div id="sql-input" class="monaco-container"></div>
                     </div>
-                    <div class="editor-wrapper">
-                        <div id="sql-output" class="monaco-container output"></div>
-                        <button class="copy-btn" onclick="copyFromMonaco('sql-output')">📋 复制</button>
+                    <div class="resizer"></div>
+                    <div class="split-pane">
+                        <div class="editor-label">
+                            <label>输出结果</label>
+                            <span class="language-badge">SQL</span>
+                        </div>
+                        <div class="editor-wrapper">
+                            <div id="sql-output" class="monaco-container output"></div>
+                            <button class="copy-btn" onclick="copyFromMonaco('sql-output')">📋 复制</button>
+                        </div>
                     </div>
                 </div>
+                <div class="resizer-v"></div>
             </div>
         </div>
     `,
@@ -1193,6 +1246,7 @@ Object.assign(toolTemplates, {
                     </div>
                 </div>
                 <div id="monaco-diff-container" class="monaco-diff-container"></div>
+                <div class="resizer-v"></div>
                 <div class="diff-actions">
                     <button class="btn btn-primary" onclick="computeDiffStats()">📊 统计差异</button>
                     <button class="btn btn-secondary" onclick="swapDiffEditors()">🔄 交换文本</button>

@@ -18,14 +18,14 @@ let isInitialized = false;
 
 function init() {
     if (isInitialized) return;
-    
+
     loadTheme();
     loadCollapsedState();
     loadTool('json-format');
     setupNavigation();
     setupMobileMenu();
     setupThemeObserver();
-    
+
     isInitialized = true;
 }
 
@@ -67,7 +67,7 @@ function loadCollapsedState() {
                 }
             });
         }
-    } catch (e) {}
+    } catch (e) { }
 }
 
 function saveCollapsedState() {
@@ -92,21 +92,21 @@ function loadTool(toolId) {
         showToast('工具加载失败', true);
         return;
     }
-    
+
     // Dispose previous Monaco editors before loading new tool
     if (window.monacoManager) {
         window.monacoManager.disposeAll();
     }
-    
+
     currentTool = toolId;
     contentBody.innerHTML = toolTemplates[toolId];
     pageTitle.textContent = toolTitles[toolId] || toolId;
-    
+
     // Initialize Monaco editors for this tool
     if (window.monacoManager) {
         window.monacoManager.initToolEditors(toolId);
     }
-    
+
     // Initialize tool-specific features
     if (toolId === 'timestamp') {
         refreshTimestamp();
@@ -115,6 +115,107 @@ function loadTool(toolId) {
     if (toolId === 'color') {
         updateColorFromHex();
     }
+
+    // Setup resizers for split view
+    setupResizers();
+}
+
+// ========================================
+// Resizable Split View Logic
+// ========================================
+function setupResizers() {
+    // Horizontal Resizers
+    const hResizers = document.querySelectorAll('.resizer');
+    hResizers.forEach(resizer => {
+        const leftPane = resizer.previousElementSibling;
+        const container = resizer.parentElement;
+
+        let isDragging = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            resizer.classList.add('dragging');
+            document.body.style.cursor = 'col-resize';
+            e.preventDefault();
+        });
+
+        const moveHandler = (e) => {
+            if (!isDragging) return;
+
+            const containerRect = container.getBoundingClientRect();
+            const isMobile = window.innerWidth <= 1024;
+
+            if (!isMobile) {
+                let offset = e.clientX - containerRect.left;
+                if (offset < 150) offset = 150;
+                if (offset > containerRect.width - 150) offset = containerRect.width - 150;
+
+                const percentage = (offset / containerRect.width) * 100;
+                leftPane.style.flex = `0 0 ${percentage}%`;
+
+                if (window.monacoManager) {
+                    window.monacoManager.layoutAll();
+                }
+            }
+        };
+
+        const upHandler = () => {
+            if (isDragging) {
+                isDragging = false;
+                resizer.classList.remove('dragging');
+                document.body.style.cursor = '';
+                document.removeEventListener('mousemove', moveHandler);
+                document.removeEventListener('mouseup', upHandler);
+            }
+        };
+
+        document.addEventListener('mousemove', moveHandler);
+        document.addEventListener('mouseup', upHandler);
+    });
+
+    // Vertical Resizers
+    const vResizers = document.querySelectorAll('.resizer-v');
+    vResizers.forEach(resizer => {
+        const splitView = resizer.previousElementSibling;
+
+        let isDragging = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            resizer.classList.add('dragging');
+            document.body.style.cursor = 'row-resize';
+            e.preventDefault();
+        });
+
+        const moveHandler = (e) => {
+            if (!isDragging) return;
+
+            const splitViewRect = splitView.getBoundingClientRect();
+            let height = e.clientY - splitViewRect.top;
+
+            if (height < 200) height = 200;
+            if (height > 1200) height = 1200;
+
+            splitView.style.height = `${height}px`;
+
+            if (window.monacoManager) {
+                window.monacoManager.layoutAll();
+            }
+        };
+
+        const upHandler = () => {
+            if (isDragging) {
+                isDragging = false;
+                resizer.classList.remove('dragging');
+                document.body.style.cursor = '';
+                document.removeEventListener('mousemove', moveHandler);
+                document.removeEventListener('mouseup', upHandler);
+            }
+        };
+
+        document.addEventListener('mousemove', moveHandler);
+        document.addEventListener('mouseup', upHandler);
+    });
 }
 
 function setupNavigation() {
@@ -127,7 +228,7 @@ function setupNavigation() {
             sidebar.classList.remove('open');
         });
     });
-    
+
     themeToggle.addEventListener('click', () => {
         const icon = themeToggle.querySelector('.theme-icon');
         if (document.documentElement.dataset.theme === 'light') {
@@ -213,7 +314,7 @@ function updateOutputLanguage() {
         'go': 'Go'
     };
     if (badge) badge.textContent = langNames[lang] || lang;
-    
+
     // Update Monaco editor language
     if (window.monacoManager) {
         window.monacoManager.updateLanguage('json-class-output', window.monacoManager.getLanguageFromSelection(lang));
@@ -313,7 +414,7 @@ function jsonToClass() {
         if (!input) { showToast('请输入JSON', true); return; }
         const obj = JSON.parse(input);
         let result = '';
-        
+
         const getType = (val, lang) => {
             if (val === null) return lang === 'typescript' ? 'any' : lang === 'java' ? 'Object' : lang === 'csharp' ? 'object' : lang === 'python' ? 'Any' : 'interface{}';
             if (Array.isArray(val)) return lang === 'typescript' ? 'any[]' : lang === 'java' ? 'List<Object>' : lang === 'csharp' ? 'List<object>' : lang === 'python' ? 'list' : '[]interface{}';
@@ -324,7 +425,7 @@ function jsonToClass() {
                 default: return 'any';
             }
         };
-        
+
         if (lang === 'typescript') {
             result = `interface ${className} {\n`;
             for (const [k, v] of Object.entries(obj)) result += `  ${k}: ${getType(v, lang)};\n`;
@@ -357,7 +458,7 @@ function jsonToClass() {
             }
             result += '}';
         }
-        
+
         if (window.monacoManager) {
             window.monacoManager.setValue('json-class-output', result);
             // Update language for syntax highlighting
@@ -409,15 +510,15 @@ function formatJs() {
     try {
         const input = window.monacoManager ? window.monacoManager.getValue('js-input') : document.getElementById('js-input').value;
         if (!input) { showToast('请输入JavaScript', true); return; }
-        
+
         // Try multiple possible locations for the beautifier function
         let beautifier = window.js_beautify || window.beautify || window.js;
-        
+
         // Sometimes it's nested in an object
         if (typeof beautifier === 'object') {
             beautifier = beautifier.js_beautify || beautifier.js || beautifier.beautify || beautifier;
         }
-        
+
         // Last resort: search window for anything containing 'beautify' that is a function
         if (typeof beautifier !== 'function') {
             for (const key in window) {
@@ -428,11 +529,11 @@ function formatJs() {
             }
         }
 
-        if (typeof beautifier !== 'function') { 
+        if (typeof beautifier !== 'function') {
             console.error('JS Beautifier not found. window keys:', Object.keys(window).filter(k => k.toLowerCase().includes('beautify')));
-            throw new Error('JS格式化库未加载'); 
+            throw new Error('JS格式化库未加载');
         }
-        
+
         const result = beautifier(input, { indent_size: 2, space_in_empty_paren: true });
         if (window.monacoManager) {
             window.monacoManager.setValue('js-output', result);
@@ -758,7 +859,7 @@ function calculateFileHash() {
     const file = document.getElementById('file-hash-input').files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const wordArray = CryptoJS.lib.WordArray.create(e.target.result);
         document.getElementById('file-md5').value = CryptoJS.MD5(wordArray).toString();
         document.getElementById('file-sha1').value = CryptoJS.SHA1(wordArray).toString();
@@ -1240,7 +1341,7 @@ function unescapeText() {
     if (!input) { showToast('请输入文本', true); return; }
     let result = input;
     if (type === 'html') result = input.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
-    else if (type === 'js') try { result = JSON.parse(input); } catch(e) {}
+    else if (type === 'js') try { result = JSON.parse(input); } catch (e) { }
     document.getElementById('text-escape-output').value = result;
     showToast('反转义成功');
 }
@@ -1505,7 +1606,7 @@ function imageToBase64() {
     const file = document.getElementById('img-file-input').files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         document.getElementById('img-base64-output').value = e.target.result;
         document.getElementById('img-preview').innerHTML = `<img src="${e.target.result}" style="max-width:100%;max-height:200px;">`;
         showToast('转换成功');

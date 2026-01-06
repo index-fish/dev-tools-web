@@ -1,7 +1,8 @@
 /* ========================================
    DevToolbox - CSS Styles
-   ======================================== *//* CSS Variables for theming */:root
-{
+   ======================================== */
+/* CSS Variables for theming */
+:root {
     /* Dark theme (default) */
     --bg-primary: #0f172a;
     --bg-secondary: #1e293b;
@@ -98,8 +99,15 @@ body {
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
 }
 
 .logo-text {
@@ -670,7 +678,8 @@ body {
 
 /* Monaco Diff Editor */
 .monaco-diff-container {
-    height: 500px;
+    height: 600px;
+    min-height: 300px;
     border: 1px solid var(--border-color);
     border-radius: 0.5rem;
     overflow: hidden;
@@ -936,7 +945,9 @@ hr {
 }
 
 /* Ensure Monaco inner elements don't have gaps */
-.monaco-editor, .monaco-editor .margin, .monaco-editor-background {
+.monaco-editor,
+.monaco-editor .margin,
+.monaco-editor-background {
     background-color: transparent !important;
 }
 
@@ -975,6 +986,116 @@ hr {
     letter-spacing: 0.03em;
 }
 
+/* Split View */
+.split-view {
+    display: flex;
+    width: 100%;
+    height: 600px;
+    min-height: 300px;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    background: var(--bg-primary);
+}
+
+.split-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 100px;
+    position: relative;
+    height: 100%;
+}
+
+.split-pane .editor-label {
+    padding: 0.5rem 1rem;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0;
+}
+
+.split-pane .monaco-container,
+.split-pane .editor-wrapper,
+.split-pane .editor-wrapper .monaco-container {
+    flex: 1;
+    height: 100% !important;
+    border: none;
+    border-radius: 0;
+}
+
+.resizer {
+    width: 6px;
+    cursor: col-resize;
+    background: var(--border-color);
+    transition: background 0.2s ease;
+    z-index: 10;
+}
+
+.resizer:hover,
+.resizer.dragging {
+    background: var(--accent-primary);
+}
+
+.resizer-v {
+    height: 6px;
+    cursor: row-resize;
+    background: var(--border-color);
+    transition: background 0.2s ease;
+    width: 100%;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    border-radius: 0 0 0.5rem 0.5rem;
+    z-index: 10;
+}
+
+.resizer-v:hover,
+.resizer-v.dragging {
+    background: var(--accent-primary);
+}
+
+.top-toolbar {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--border-color);
+}
+
+.form-group-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group-inline label {
+    margin-bottom: 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.input-select-small {
+    padding: 0.35rem 2rem 0.35rem 0.6rem;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.4rem;
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 0.8rem;
+}
+
 /* Responsive */
 @media(max-width: 1024px) {
     .sidebar {
@@ -995,6 +1116,22 @@ hr {
 
     .chmod-grid {
         grid-template-columns: 1fr;
+    }
+
+    .split-view {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .resizer {
+        width: 100%;
+        height: 6px;
+        cursor: row-resize;
+    }
+
+    .split-pane {
+        width: 100% !important;
+        height: 350px;
     }
 }
 
