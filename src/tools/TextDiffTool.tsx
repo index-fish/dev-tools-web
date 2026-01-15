@@ -17,7 +17,7 @@ const TextDiffTool: React.FC = () => {
 
         // Simple HTML representation or text representation
         // For Monaco, we could use a DiffEditor, but let's provide a text summary first
-        const summary = diffs.map(([op, text], i) => {
+        const summary = diffs.map(([op, text]) => {
             const prefix = op === 1 ? '+ ' : op === -1 ? '- ' : '  ';
             return text.split('\n').map(line => prefix + line).join('\n');
         }).join('\n');
