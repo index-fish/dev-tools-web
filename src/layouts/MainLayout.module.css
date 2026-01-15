@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--bg-primary);
+    position: relative;
+}
+
+/* Background decorative blobs */
+.container::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    background: transparent;
+}
+
+.content {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
