@@ -1,5 +1,6 @@
 import React from 'react';
 import { ToolProvider, useTools } from './store/ToolContext';
+import { IconProvider, DEFAULT_ICON_CONFIGS } from '@icon-park/react';
 import MainLayout from './layouts/MainLayout';
 import JsonFormatter from './tools/JsonFormatter';
 import JsonExtraTool from './tools/JsonExtraTool';
@@ -102,11 +103,13 @@ const ToolRenderer: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <ToolProvider>
-      <MainLayout>
-        <ToolRenderer />
-      </MainLayout>
-    </ToolProvider>
+    <IconProvider value={{ ...DEFAULT_ICON_CONFIGS, theme: 'outline', size: '1.25rem', strokeWidth: 4 }}>
+      <ToolProvider>
+        <MainLayout>
+          <ToolRenderer />
+        </MainLayout>
+      </ToolProvider>
+    </IconProvider>
   );
 };
 

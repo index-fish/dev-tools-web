@@ -2,7 +2,7 @@ import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useTools } from '../store/ToolContext';
 import { SECTIONS } from '../store/ToolMetadata';
-import { ChevronDown, GripVertical } from 'lucide-react';
+import { Drag, Down, Toolkit } from '@icon-park/react';
 import styles from './Sidebar.module.css';
 import { clsx } from 'clsx';
 
@@ -25,7 +25,9 @@ const Sidebar: React.FC = () => {
         <aside className={styles.sidebar}>
             <div className={styles.header}>
                 <div className={styles.logo}>
-                    <span className={styles.logoIcon}>🧰</span>
+                    <span className={styles.logoIcon}>
+                        <Toolkit theme="multi-color" fill={['#ffffff', '#6366f1', '#6366f1', '#ffffff']} size="24" />
+                    </span>
                     <span className={styles.logoText}>DevToolbox</span>
                 </div>
             </div>
@@ -57,7 +59,7 @@ const Sidebar: React.FC = () => {
                                                             {...provided.dragHandleProps}
                                                             className={styles.handle}
                                                         >
-                                                            <GripVertical size={16} />
+                                                            <Drag size={16} />
                                                         </div>
 
                                                         <div
@@ -66,7 +68,7 @@ const Sidebar: React.FC = () => {
                                                         >
                                                             <span className={styles.icon}>{section.icon}</span>
                                                             <span className={styles.name}>{section.name}</span>
-                                                            <ChevronDown size={16} className={styles.chevron} />
+                                                            <Down size={16} className={styles.chevron} />
                                                         </div>
                                                     </div>
 

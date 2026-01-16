@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTools } from '../store/ToolContext';
 import { SECTIONS } from '../store/ToolMetadata';
-import { Sun, Moon, Github, ChevronRight } from 'lucide-react';
+import { Sun, Moon, Github, Right } from '@icon-park/react';
 import styles from './Header.module.css';
 
 const Header: React.FC = () => {
@@ -23,7 +23,7 @@ const Header: React.FC = () => {
             <div className={styles.titleInfo}>
                 <div className={styles.breadcrumb}>
                     <span>{sectionName}</span>
-                    <ChevronRight size={14} className={styles.breadcrumbSeparator} />
+                    <Right size={14} className={styles.breadcrumbSeparator} />
                     <span className={styles.activeToolName}>{toolName}</span>
                 </div>
             </div>
