@@ -48,8 +48,6 @@ const ToolRenderer: React.FC = () => {
     case 'unicode':
     case 'hex':
       return <EncodingTool />;
-    case 'gzip':
-      return <HashExpandTool />;
     case 'jwt':
       return <JwtTool />;
     case 'hash':
@@ -57,6 +55,8 @@ const ToolRenderer: React.FC = () => {
     case 'hmac':
     case 'crc':
     case 'file-hash':
+    case 'gzip':
+    case 'lzstring':
       return <HashExpandTool />;
     case 'aes':
     case 'des':

@@ -62,6 +62,7 @@ export const SECTIONS: Record<string, SectionInfo> = {
             { id: 'unicode', name: 'Unicode 编码/解码' },
             { id: 'hex', name: 'Hex 编码/解码' },
             { id: 'gzip', name: 'Gzip 压缩/解压' },
+            { id: 'lzstring', name: 'LZ-String 压缩/解压' },
             { id: 'jwt', name: 'JWT 解析器' },
         ]
     },

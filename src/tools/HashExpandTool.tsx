@@ -5,6 +5,7 @@ import { ToolLayout, ToolPane } from '../components/ToolLayout';
 import CryptoJS from 'crypto-js';
 import pako from 'pako';
 import crc32 from 'crc-32';
+import LZString from 'lz-string';
 import { ShieldCheck, Zap, Trash2, Copy, FileArchive, Upload } from 'lucide-react';
 
 const HashExpandTool: React.FC = () => {
@@ -14,6 +15,7 @@ const HashExpandTool: React.FC = () => {
     const [key, setKey] = useState('');
     const [fileInfo, setFileInfo] = useState<{ name: string, size: number } | null>(null);
     const [hashResults, setHashResults] = useState<{ md5: string, sha256: string } | null>(null);
+    const [lzFormat, setLzFormat] = useState('base64');
 
     const processFile = (file: File) => {
         setFileInfo({ name: file.name, size: file.size });
@@ -86,12 +88,38 @@ const HashExpandTool: React.FC = () => {
         }
     };
 
+    const handleLzString = (compress: boolean) => {
+        if (!input) return;
+        try {
+            if (compress) {
+                switch (lzFormat) {
+                    case 'base64': setOutput(LZString.compressToBase64(input)); break;
+                    case 'utf16': setOutput(LZString.compressToUTF16(input)); break;
+                    case 'uri': setOutput(LZString.compressToEncodedURIComponent(input)); break;
+                    default: setOutput(LZString.compress(input));
+                }
+            } else {
+                let decompressed: string | null = null;
+                switch (lzFormat) {
+                    case 'base64': decompressed = LZString.decompressFromBase64(input); break;
+                    case 'utf16': decompressed = LZString.decompressFromUTF16(input); break;
+                    case 'uri': decompressed = LZString.decompressFromEncodedURIComponent(input); break;
+                    default: decompressed = LZString.decompress(input);
+                }
+                setOutput(decompressed || '解压失败: 无效的压缩数据');
+            }
+        } catch (e: any) {
+            setOutput(`LZ-String 处理失败: ${e.message}`);
+        }
+    };
+
     const getTitle = () => {
         switch (activeTool) {
             case 'hmac': return 'HMAC 加密';
             case 'crc': return 'CRC 校验';
             case 'file-hash': return '文件 Hash 计算';
             case 'gzip': return 'Gzip 压缩/解压';
+            case 'lzstring': return 'LZ-String 压缩/解压';
             default: return '工具';
         }
     };
@@ -101,7 +129,8 @@ const HashExpandTool: React.FC = () => {
             case 'hmac': return '使用密钥的哈希消息认证码，额外安全性保障。';
             case 'crc': return '循环冗余校验，常用于数据传输检错。';
             case 'file-hash': return '计算文件的 MD5、SHA256 等摘要值，验证文件完整性。';
-            case 'gzip': return '使用 Gzip 算法对文本进行高效压缩或解压缩。';
+            case 'gzip': return '使用 Gzip 算法对文本进行高效压缩 or 解压缩。';
+            case 'lzstring': return '基于 LZ 的高性能字符串压缩算法，常用于 LocalStorage 存储优化。';
             default: return '';
         }
     };
@@ -127,8 +156,20 @@ const HashExpandTool: React.FC = () => {
                                 <button onClick={() => handleGzip(false)} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', padding: '10px 24px', borderRadius: '10px', fontWeight: 700 }}>解压缩</button>
                             </>
                         )}
+                        {activeTool === 'lzstring' && (
+                            <>
+                                <button onClick={() => handleLzString(true)} style={{ background: 'var(--accent-gradient)', color: 'white', padding: '10px 24px', borderRadius: '10px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}><FileArchive size={18} /> LZ 压缩</button>
+                                <button onClick={() => handleLzString(false)} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', padding: '10px 24px', borderRadius: '10px', fontWeight: 700 }}>解压缩</button>
+                                <select value={lzFormat} onChange={e => setLzFormat(e.target.value)} style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '8px', borderRadius: '8px', fontSize: '0.85rem' }}>
+                                    <option value="base64">Base64 (推荐)</option>
+                                    <option value="utf16">UTF16</option>
+                                    <option value="uri">URI Encoded</option>
+                                    <option value="raw">Raw</option>
+                                </select>
+                            </>
+                        )}
                         <div style={{ flex: 1 }}></div>
-                        <button onClick={() => { setInput(''); setOutput(''); setFileInfo(null); setHashResults(null); }} style={{ color: 'var(--error-color)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}><Trash2 size={16} /> 清空</button>
+                        <button onClick={() => { setInput(''); setOutput(''); setFileInfo(null); setHashResults(null); }} style={{ color: 'var(--error-color)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px', background: 'none' }}><Trash2 size={16} /> 清空</button>
                     </div>
                 </div>
             }
