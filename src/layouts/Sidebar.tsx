@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
             <div className={styles.header}>
                 <div className={styles.logo}>
                     <span className={styles.logoIcon}>
-                        <Toolkit theme="multi-color" fill={['#ffffff', '#6366f1', '#6366f1', '#ffffff']} size="24" />
+                        <Toolkit theme="multi-color" fill={['#ffffff', '#07C160', '#07C160', '#ffffff']} size="24" />
                     </span>
                     <span className={styles.logoText}>DevToolbox</span>
                 </div>
