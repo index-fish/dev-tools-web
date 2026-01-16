@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import ToolCard from '../components/ToolCard';
 import MonacoEditor from '../components/Editor';
+import { ToolLayout, ToolPane } from '../components/ToolLayout';
 import { useTools } from '../store/ToolContext';
 import { Braces, Code, Copy, Trash2, FileJson } from 'lucide-react';
 
@@ -97,14 +97,11 @@ const JsonExtraTool: React.FC = () => {
     const isEscape = activeTool === 'json-escape';
 
     return (
-        <ToolCard
+        <ToolLayout
             title={isEscape ? 'JSON 转义/反转义' : 'JSON 生成实体类'}
             description={isEscape ? '将 JSON 字符串转义为普通文本，或将转义后的文本还原为 JSON。' : '将 JSON 对象自动转换为 TypeScript、Java、C# 等语言的类/接口定义。'}
-        >
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', minHeight: 0 }}>
-
-                {/* Options Bar */}
-                <div style={{ padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            header={
+                <div style={{ padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', gap: '1rem', alignItems: 'center', width: '100%' }}>
                     {isEscape ? (
                         <>
                             <button onClick={() => handleEscape(true)} style={{ background: 'var(--accent-gradient)', color: 'white', padding: '10px 20px', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -140,29 +137,24 @@ const JsonExtraTool: React.FC = () => {
                         <Trash2 size={16} /> 清空
                     </button>
                 </div>
-
-                {/* Editors */}
-                <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', minHeight: 0 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>输入数据</span>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={input} onChange={v => setInput(v || '')} language="json" />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>输出结果</span>
-                            <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <Copy size={14} /> 复制
-                            </button>
-                        </div>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={output} readOnly language={isEscape ? "text" : lang === "typescript" ? "typescript" : lang === "java" || lang === "csharp" ? "csharp" : lang === "python" ? "python" : "go"} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ToolCard>
+            }
+            splitId="json-extra-tool"
+        >
+            <ToolPane title="输入数据" style={{ paddingRight: '4px' }}>
+                <MonacoEditor value={input} onChange={v => setInput(v || '')} language="json" />
+            </ToolPane>
+            <ToolPane
+                title="输出结果"
+                style={{ paddingLeft: '4px' }}
+                extra={
+                    <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Copy size={14} /> 复制
+                    </button>
+                }
+            >
+                <MonacoEditor value={output} readOnly language={isEscape ? "text" : lang === "typescript" ? "typescript" : lang === "java" || lang === "csharp" ? "csharp" : lang === "python" ? "python" : "go"} />
+            </ToolPane>
+        </ToolLayout>
     );
 };
 

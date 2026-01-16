@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ToolCard from '../components/ToolCard';
+import { ToolLayout, ToolPane } from '../components/ToolLayout';
 import MonacoEditor from '../components/Editor';
 import { Upload, Download, Trash2, Copy } from 'lucide-react';
 
@@ -40,29 +40,17 @@ const Base64Tool: React.FC = () => {
     };
 
     return (
-        <ToolCard
+        <ToolLayout
             title="Base64 编码/解码"
-            description="Base64 编码与解码工具，支持 UTF-8 中文字符"
-        >
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', minHeight: 0 }}>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <label style={{ marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>输入文本 / Base64</label>
-                    <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden' }}>
-                        <MonacoEditor
-                            value={input}
-                            onChange={(v) => setInput(v || '')}
-                            language="text"
-                        />
-                    </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px' }}>
+            description="Base64 编码与解码工具，支持 UTF-8 中文字符。"
+            header={
+                <>
                     <button
                         onClick={handleEncode}
                         style={{
                             display: 'flex', alignItems: 'center', gap: '8px',
-                            background: 'var(--accent-primary)', color: 'white',
-                            padding: '8px 16px', borderRadius: '6px', fontWeight: 500
+                            background: 'var(--accent-gradient)', color: 'white',
+                            padding: '10px 24px', borderRadius: '10px', fontWeight: 700
                         }}
                     >
                         <Upload size={18} /> 编码
@@ -71,48 +59,49 @@ const Base64Tool: React.FC = () => {
                         onClick={handleDecode}
                         style={{
                             display: 'flex', alignItems: 'center', gap: '8px',
-                            background: 'var(--accent-secondary)', color: 'white',
-                            padding: '8px 16px', borderRadius: '6px', fontWeight: 500
+                            background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)',
+                            padding: '10px 24px', borderRadius: '10px', fontWeight: 700
                         }}
                     >
                         <Download size={18} /> 解码
                     </button>
+                    <div style={{ flex: 1 }}></div>
                     <button
                         onClick={handleClear}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '8px',
-                            background: 'var(--bg-tertiary)', color: 'var(--text-primary)',
-                            padding: '8px 16px', borderRadius: '6px'
-                        }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--error-color)', fontSize: '0.85rem' }}
                     >
-                        <Trash2 size={18} /> 清空
+                        <Trash2 size={16} /> 清空
                     </button>
-                </div>
-
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                        <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>输出结果</label>
-                        <button
-                            onClick={handleCopy}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '4px',
-                                fontSize: '0.75rem', color: 'var(--accent-primary)',
-                                background: 'transparent', padding: '2px 8px'
-                            }}
-                        >
-                            <Copy size={14} /> 复制
-                        </button>
-                    </div>
-                    <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden' }}>
-                        <MonacoEditor
-                            value={output}
-                            readOnly
-                            language="text"
-                        />
-                    </div>
-                </div>
-            </div>
-        </ToolCard>
+                </>
+            }
+            splitId="base64-tool"
+        >
+            <ToolPane title="输入文本 / Base64" style={{ paddingRight: '4px' }}>
+                <MonacoEditor
+                    value={input}
+                    onChange={(v) => setInput(v || '')}
+                    language="text"
+                />
+            </ToolPane>
+            <ToolPane
+                title="输出结果"
+                style={{ paddingLeft: '4px' }}
+                extra={
+                    <button
+                        onClick={handleCopy}
+                        style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                        <Copy size={14} /> 复制
+                    </button>
+                }
+            >
+                <MonacoEditor
+                    value={output}
+                    readOnly
+                    language="text"
+                />
+            </ToolPane>
+        </ToolLayout>
     );
 };
 

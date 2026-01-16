@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import ToolCard from '../components/ToolCard';
 import MonacoEditor from '../components/Editor';
-import { Search, TextCursorInput, ListFilter, Trash2 } from 'lucide-react';
+import { ToolLayout, ToolPane } from '../components/ToolLayout';
+import { Search, Trash2 } from 'lucide-react';
 
 const RegexTool: React.FC = () => {
     const [regex, setRegex] = useState('');
@@ -31,14 +31,11 @@ const RegexTool: React.FC = () => {
 
 
     return (
-        <ToolCard
+        <ToolLayout
             title="正则表达式测试"
             description="在线测试和调试正则表达式，支持匹配项统计、分组查看及常用正则参考。"
-        >
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', minHeight: 0 }}>
-
-                {/* Regex Input Bar */}
-                <div style={{ padding: '1.25rem', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', gap: '12px', alignItems: 'center' }}>
+            header={
+                <div style={{ padding: '1.25rem', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', gap: '12px', alignItems: 'center', width: '100%' }}>
                     <div style={{ flex: 1, position: 'relative' }}>
                         <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontWeight: 700 }}>/</span>
                         <input
@@ -61,32 +58,23 @@ const RegexTool: React.FC = () => {
                         <Search size={18} /> 测试
                     </button>
                 </div>
-
-                {/* Editors */}
-                <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', minHeight: 0 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <TextCursorInput size={14} /> 待测试文本
-                            </span>
-                            <button onClick={() => setTestText('')} style={{ color: 'var(--error-color)', fontSize: '0.75rem' }}><Trash2 size={14} /></button>
-                        </div>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={testText} onChange={v => setTestText(v || '')} language="text" />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <ListFilter size={14} /> 匹配结果
-                        </span>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={results} readOnly language="text" />
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </ToolCard>
+            }
+            splitId="regex-tool"
+        >
+            <ToolPane
+                title="待测试文本"
+                style={{ paddingRight: '4px' }}
+                extra={<button onClick={() => setTestText('')} style={{ color: 'var(--error-color)', fontSize: '0.75rem' }}><Trash2 size={14} /></button>}
+            >
+                <MonacoEditor value={testText} onChange={v => setTestText(v || '')} language="text" />
+            </ToolPane>
+            <ToolPane
+                title="匹配结果"
+                style={{ paddingLeft: '4px' }}
+            >
+                <MonacoEditor value={results} readOnly language="text" />
+            </ToolPane>
+        </ToolLayout>
     );
 };
 

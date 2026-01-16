@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import ToolCard from '../components/ToolCard';
 import MonacoEditor from '../components/Editor';
-
+import { ToolLayout, ToolPane } from '../components/ToolLayout';
 import { Copy, Trash2 } from 'lucide-react';
 
 // Simplified multi-base implementations or placeholders
@@ -50,10 +49,11 @@ const BaseMultiTool: React.FC = () => {
     };
 
     return (
-        <ToolCard title="多进制编码" description="支持 Base16, Base32, Base58, Base62 等多种格式的互相转换。">
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', minHeight: 0 }}>
-
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: 'var(--bg-secondary)', padding: '10px', borderRadius: '10px' }}>
+        <ToolLayout
+            title="多进制编码"
+            description="支持 Base16, Base32, Base58, Base62 等多种格式的互相转换。"
+            header={
+                <>
                     <select value={mode} onChange={e => setMode(e.target.value as any)} style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '8px', borderRadius: '6px' }}>
                         <option value="encode">编码 (Encode)</option>
                         <option value="decode">解码 (Decode)</option>
@@ -67,27 +67,25 @@ const BaseMultiTool: React.FC = () => {
                     <button onClick={handleProcess} style={{ background: 'var(--accent-gradient)', color: 'white', padding: '8px 24px', borderRadius: '8px', fontWeight: 600 }}>开始处理</button>
                     <div style={{ flex: 1 }}></div>
                     <button onClick={() => { setInput(''); setOutput(''); }} style={{ color: 'var(--error-color)' }}><Trash2 size={16} /></button>
-                </div>
-
-                <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', minHeight: 0 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>输入数据</span>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={input} onChange={v => setInput(v || '')} language="text" />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>结果</span>
-                            <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem' }}><Copy size={14} /> 复制</button>
-                        </div>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={output} readOnly language="text" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ToolCard>
+                </>
+            }
+            splitId="base-multi-tool"
+        >
+            <ToolPane title="输入数据" style={{ paddingRight: '4px' }}>
+                <MonacoEditor value={input} onChange={v => setInput(v || '')} language="text" />
+            </ToolPane>
+            <ToolPane
+                title="结果"
+                style={{ paddingLeft: '4px' }}
+                extra={
+                    <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem' }}>
+                        <Copy size={14} /> 复制
+                    </button>
+                }
+            >
+                <MonacoEditor value={output} readOnly language="text" />
+            </ToolPane>
+        </ToolLayout>
     );
 };
 

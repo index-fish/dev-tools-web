@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ToolCard from '../components/ToolCard';
+import { ToolLayout, ToolPane } from '../components/ToolLayout';
 import MonacoEditor from '../components/Editor';
 import { useTools } from '../store/ToolContext';
 import { Copy, Trash2, ArrowRightLeft } from 'lucide-react';
@@ -60,10 +60,11 @@ const EncodingTool: React.FC = () => {
     };
 
     return (
-        <ToolCard title={getToolTitle()} description={getToolDescription()}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', minHeight: 0 }}>
-
-                <div style={{ display: 'flex', gap: '1rem' }}>
+        <ToolLayout
+            title={getToolTitle()}
+            description={getToolDescription()}
+            header={
+                <>
                     <button onClick={() => handleProcess(true)} style={{ background: 'var(--accent-gradient)', color: 'white', padding: '10px 24px', borderRadius: '10px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         编码 <ArrowRightLeft size={18} />
                     </button>
@@ -74,29 +75,25 @@ const EncodingTool: React.FC = () => {
                     <button onClick={() => { setInput(''); setOutput(''); }} style={{ color: 'var(--error-color)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <Trash2 size={16} /> 清空
                     </button>
-                </div>
-
-                <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', minHeight: 0 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>输入数据</span>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={input} onChange={v => setInput(v || '')} language="text" />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>输出结果</span>
-                            <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <Copy size={14} /> 复制
-                            </button>
-                        </div>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={output} readOnly language="text" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ToolCard>
+                </>
+            }
+            splitId="encoding-tool"
+        >
+            <ToolPane title="输入数据" style={{ paddingRight: '4px' }}>
+                <MonacoEditor value={input} onChange={v => setInput(v || '')} language="text" />
+            </ToolPane>
+            <ToolPane
+                title="输出结果"
+                style={{ paddingLeft: '4px' }}
+                extra={
+                    <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Copy size={14} /> 复制
+                    </button>
+                }
+            >
+                <MonacoEditor value={output} readOnly language="text" />
+            </ToolPane>
+        </ToolLayout>
     );
 };
 

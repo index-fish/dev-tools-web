@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ToolCard from '../components/ToolCard';
+import { ToolLayout, ToolPane } from '../components/ToolLayout';
 import MonacoEditor from '../components/Editor';
 import { useTools } from '../store/ToolContext';
 import CryptoJS from 'crypto-js';
@@ -93,175 +93,185 @@ const AesTool: React.FC = () => {
         setIv(newIv);
     };
 
+    const getTitle = () => {
+        switch (activeTool) {
+            case 'des': return 'DES 加密/解密';
+            case 'tripledes': return '3DES 加密/解密';
+            case 'rc4': return 'RC4 加密/解密';
+            case 'rabbit': return 'Rabbit 加密/解密';
+            default: return 'AES 加密/解密';
+        }
+    };
+
+    const getDescription = () => {
+        switch (activeTool) {
+            case 'des': return '数据加密标准 (Data Encryption Standard)，包含 DES 和 3DES。';
+            case 'rc4': return '流加密算法 RC4，常用于快速数据流加密。';
+            case 'rabbit': return '一种快速的流加密算法。';
+            default: return '高级加密标准 (Advanced Encryption Standard)，支持多种模式和填充方式。';
+        }
+    };
+
     return (
-        <ToolCard
-            title="AES 加密/解密"
-            description="高级加密标准 (Advanced Encryption Standard)，支持多种模式和填充方式，确保数据安全。"
-        >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1, minHeight: 0 }}>
-
-                {/* Settings Bar */}
-                <div style={{
-                    display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                    gap: '1.25rem', padding: '1.25rem', background: 'rgba(255,255,255,0.02)',
-                    borderRadius: '12px', border: '1px solid var(--border-color)'
-                }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>密钥 (Key)</label>
-                            <select
-                                value={keyFormat}
-                                onChange={(e) => setKeyFormat(e.target.value)}
-                                style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
-                            >
-                                <option value="utf8">UTF8</option>
-                                <option value="hex">HEX</option>
-                                <option value="base64">BASE64</option>
-                            </select>
-                        </div>
-                        <input
-                            type="text"
-                            value={key}
-                            onChange={(e) => setKey(e.target.value)}
-                            placeholder={keyFormat === 'utf8' ? "16/24/32位密钥" : `输入 ${keyFormat.toUpperCase()} 格式密钥`}
-                            style={{
-                                width: '100%', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
-                                color: 'var(--text-primary)', padding: '10px 12px', borderRadius: '8px', fontSize: '0.9rem'
-                            }}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>向量 (IV)</label>
-                            <select
-                                value={ivFormat}
-                                onChange={(e) => setIvFormat(e.target.value)}
-                                style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
-                            >
-                                <option value="utf8">UTF8</option>
-                                <option value="hex">HEX</option>
-                                <option value="base64">BASE64</option>
-                            </select>
-                        </div>
-                        <input
-                            type="text"
-                            value={iv}
-                            onChange={(e) => setIv(e.target.value)}
-                            placeholder={ivFormat === 'utf8' ? "16位向量" : `输入 ${ivFormat.toUpperCase()} 格式向量`}
-                            style={{
-                                width: '100%', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
-                                color: 'var(--text-primary)', padding: '10px 12px', borderRadius: '8px', fontSize: '0.9rem'
-                            }}
-                        />
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>配置选项</label>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <select
-                                value={mode}
-                                onChange={(e) => setMode(e.target.value)}
-                                style={{ flex: 1, background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '8px', borderRadius: '8px', fontSize: '0.85rem' }}
-                            >
-                                <option value="CBC">CBC</option>
-                                <option value="ECB">ECB</option>
-                                <option value="CFB">CFB</option>
-                                <option value="OFB">OFB</option>
-                                <option value="CTR">CTR</option>
-                            </select>
-                            <select
-                                value={padding}
-                                onChange={(e) => setPadding(e.target.value)}
-                                style={{ flex: 1, background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '8px', borderRadius: '8px', fontSize: '0.85rem' }}
-                            >
-                                <option value="Pkcs7">PKCS7</option>
-                                <option value="ZeroPadding">ZeroPadding</option>
-                                <option value="NoPadding">NoPadding</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <button
-                        onClick={handleEncrypt}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '8px',
-                            background: 'var(--accent-gradient)', color: 'white',
-                            padding: '10px 24px', borderRadius: '10px', fontWeight: 700,
-                            boxShadow: '0 4px 15px rgba(99, 102, 241, 0.3)'
-                        }}
-                    >
-                        <Lock size={18} /> 加密
-                    </button>
-                    <button
-                        onClick={handleDecrypt}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '8px',
-                            background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                            padding: '10px 24px', borderRadius: '10px', fontWeight: 700,
-                            border: '1px solid var(--accent-primary)',
-                            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
-                        }}
-                    >
-                        <Unlock size={18} /> 解密
-                    </button>
-                    <div style={{ flex: 1 }}></div>
-                    <button
-                        onClick={generateRandomKey}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            color: 'var(--text-muted)', fontSize: '0.85rem'
-                        }}
-                    >
-                        <RefreshCw size={16} /> 随机密钥
-                    </button>
-                </div>
-
-                {/* Editors */}
-                <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', minHeight: 0 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>原文 / 密文</span>
-                            <button
-                                onClick={() => setInput('')}
-                                style={{ color: 'var(--error-color)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}
-                            >
-                                <Trash2 size={14} /> 清空
-                            </button>
-                        </div>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                            <MonacoEditor value={input} onChange={(v) => setInput(v || '')} language="text" />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>处理结果</span>
-                            <div style={{ display: 'flex', gap: '1rem' }}>
+        <ToolLayout
+            title={getTitle()}
+            description={getDescription()}
+            header={
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
+                    {/* Settings Bar */}
+                    <div style={{
+                        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '1.25rem', padding: '1.25rem', background: 'var(--bg-secondary)',
+                        borderRadius: '12px', border: '1px solid var(--border-color)'
+                    }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>密钥 (Key)</label>
                                 <select
-                                    value={outFormat}
-                                    onChange={(e) => setOutFormat(e.target.value)}
-                                    style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.75rem', fontWeight: 700 }}
+                                    value={keyFormat}
+                                    onChange={(e) => setKeyFormat(e.target.value)}
+                                    style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
                                 >
-                                    <option value="base64">BASE64</option>
+                                    <option value="utf8">UTF8</option>
                                     <option value="hex">HEX</option>
+                                    <option value="base64">BASE64</option>
                                 </select>
-                                <button
-                                    onClick={() => navigator.clipboard.writeText(output)}
-                                    style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                            </div>
+                            <input
+                                type="text"
+                                value={key}
+                                onChange={(e) => setKey(e.target.value)}
+                                placeholder={keyFormat === 'utf8' ? "16/24/32位密钥" : `输入 ${keyFormat.toUpperCase()} 格式密钥`}
+                                style={{
+                                    width: '100%', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
+                                    color: 'var(--text-primary)', padding: '10px 12px', borderRadius: '8px', fontSize: '0.9rem'
+                                }}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>向量 (IV)</label>
+                                <select
+                                    value={ivFormat}
+                                    onChange={(e) => setIvFormat(e.target.value)}
+                                    style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
                                 >
-                                    <Copy size={14} /> 复制
-                                </button>
+                                    <option value="utf8">UTF8</option>
+                                    <option value="hex">HEX</option>
+                                    <option value="base64">BASE64</option>
+                                </select>
+                            </div>
+                            <input
+                                type="text"
+                                value={iv}
+                                onChange={(e) => setIv(e.target.value)}
+                                placeholder={ivFormat === 'utf8' ? "16位向量" : `输入 ${ivFormat.toUpperCase()} 格式向量`}
+                                style={{
+                                    width: '100%', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
+                                    color: 'var(--text-primary)', padding: '10px 12px', borderRadius: '8px', fontSize: '0.9rem'
+                                }}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>配置选项</label>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <select
+                                    value={mode}
+                                    onChange={(e) => setMode(e.target.value)}
+                                    style={{ flex: 1, background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '8px', borderRadius: '8px', fontSize: '0.85rem' }}
+                                >
+                                    <option value="CBC">CBC</option>
+                                    <option value="ECB">ECB</option>
+                                    <option value="CFB">CFB</option>
+                                    <option value="OFB">OFB</option>
+                                    <option value="CTR">CTR</option>
+                                </select>
+                                <select
+                                    value={padding}
+                                    onChange={(e) => setPadding(e.target.value)}
+                                    style={{ flex: 1, background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '8px', borderRadius: '8px', fontSize: '0.85rem' }}
+                                >
+                                    <option value="Pkcs7">PKCS7</option>
+                                    <option value="ZeroPadding">ZeroPadding</option>
+                                    <option value="NoPadding">NoPadding</option>
+                                </select>
                             </div>
                         </div>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                            <MonacoEditor value={output} readOnly language="text" />
-                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                        <button
+                            onClick={handleEncrypt}
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                background: 'var(--accent-gradient)', color: 'white',
+                                padding: '10px 24px', borderRadius: '10px', fontWeight: 700
+                            }}
+                        >
+                            <Lock size={18} /> 加密
+                        </button>
+                        <button
+                            onClick={handleDecrypt}
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                background: 'var(--bg-secondary)', color: 'var(--text-primary)',
+                                padding: '10px 24px', borderRadius: '10px', fontWeight: 700,
+                                border: '1px solid var(--accent-primary)'
+                            }}
+                        >
+                            <Unlock size={18} /> 解密
+                        </button>
+                        <button
+                            onClick={generateRandomKey}
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                                color: 'var(--text-muted)', fontSize: '0.85rem', background: 'none'
+                            }}
+                        >
+                            <RefreshCw size={16} /> 随机密钥
+                        </button>
+                        <div style={{ flex: 1 }}></div>
+                        <button
+                            onClick={() => { setInput(''); setOutput(''); }}
+                            style={{ color: 'var(--error-color)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px', background: 'none' }}
+                        >
+                            <Trash2 size={16} /> 清空
+                        </button>
                     </div>
                 </div>
-            </div>
-        </ToolCard>
+            }
+            splitId="aes-tool"
+        >
+            <ToolPane title="原文 / 密文" style={{ paddingRight: '4px' }}>
+                <MonacoEditor value={input} onChange={(v) => setInput(v || '')} language="text" />
+            </ToolPane>
+            <ToolPane
+                title="处理结果"
+                style={{ paddingLeft: '4px' }}
+                extra={
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <select
+                            value={outFormat}
+                            onChange={(e) => setOutFormat(e.target.value)}
+                            style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.75rem', fontWeight: 700 }}
+                        >
+                            <option value="base64">BASE64</option>
+                            <option value="hex">HEX</option>
+                        </select>
+                        <button
+                            onClick={() => navigator.clipboard.writeText(output)}
+                            style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', background: 'none' }}
+                        >
+                            <Copy size={14} /> 复制
+                        </button>
+                    </div>
+                }
+            >
+                <MonacoEditor value={output} readOnly language="text" />
+            </ToolPane>
+        </ToolLayout>
     );
 };
 

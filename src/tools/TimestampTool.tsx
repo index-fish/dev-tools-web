@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import ToolCard from '../components/ToolCard';
-import { Clock, ArrowRightLeft, RefreshCcw, Copy, Calendar, Timer } from 'lucide-react';
+import { ToolLayout, ToolPane } from '../components/ToolLayout';
+import { Clock, ArrowRightLeft, RefreshCcw, Copy, Calendar } from 'lucide-react';
 
 const TimestampTool: React.FC = () => {
     const [now, setNow] = useState(Date.now());
@@ -52,12 +52,13 @@ const TimestampTool: React.FC = () => {
     };
 
     return (
-        <ToolCard
+        <ToolLayout
             title="Unix 时间戳转换"
             description="时间戳与日期字符串互相转换，支持秒和毫秒单位，实时显示系统当前时间。"
+            splitId="timestamp-tool"
+            direction="vertical"
         >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
-
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', height: '100%', minHeight: 0 }}>
                 {/* Current Time Banner */}
                 <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -72,7 +73,7 @@ const TimestampTool: React.FC = () => {
                             width: '56px', height: '56px', borderRadius: '12px', background: 'var(--accent-glow)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-primary)'
                         }}>
-                            <Timer size={32} />
+                            <span style={{ fontSize: '1.5rem' }}>⏱️</span>
                         </div>
                         <div>
                             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>当前 Unix 时间戳</div>
@@ -85,7 +86,7 @@ const TimestampTool: React.FC = () => {
                             onClick={() => handleCopy(Math.floor(now / 1000).toString())}
                             style={{
                                 background: 'rgba(99, 102, 241, 0.1)', color: 'var(--accent-primary)',
-                                fontSize: '0.75rem', marginTop: '8px', padding: '4px 12px', borderRadius: '20px', fontWeight: 600
+                                border: 'none', fontSize: '0.75rem', marginTop: '8px', padding: '4px 12px', borderRadius: '20px', fontWeight: 600
                             }}
                         >
                             复制秒单位
@@ -138,31 +139,29 @@ const TimestampTool: React.FC = () => {
                         </button>
                     </div>
                 </div>
-
-                {/* Results Area */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                        <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>转换详情</label>
-                        {output && (
-                            <button onClick={() => handleCopy(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', background: 'none' }}>
-                                <Copy size={14} /> 复制全部
-                            </button>
-                        )}
-                    </div>
-                    <textarea
-                        readOnly
-                        value={output}
-                        style={{
-                            flex: 1, background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
-                            color: 'var(--text-primary)', padding: '1.5rem', borderRadius: '12px',
-                            fontFamily: 'monospace', fontSize: '0.95rem', resize: 'none', lineHeight: 1.6,
-                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
-                        }}
-                        placeholder="等待转换结果..."
-                    />
-                </div>
             </div>
-        </ToolCard >
+
+            <ToolPane
+                title="转换详情"
+                style={{ paddingTop: '1rem' }}
+                extra={output && (
+                    <button onClick={() => handleCopy(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', background: 'none' }}>
+                        <Copy size={14} /> 复制全部
+                    </button>
+                )}
+            >
+                <textarea
+                    readOnly
+                    value={output}
+                    style={{
+                        flex: 1, background: 'transparent', border: 'none',
+                        color: 'var(--text-primary)', padding: '0',
+                        fontFamily: 'monospace', fontSize: '0.95rem', resize: 'none', lineHeight: 1.6
+                    }}
+                    placeholder="等待转换结果..."
+                />
+            </ToolPane>
+        </ToolLayout>
     );
 };
 

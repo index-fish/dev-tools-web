@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import ToolCard from '../components/ToolCard';
 import MonacoEditor from '../components/Editor';
+import { ToolLayout, ToolPane } from '../components/ToolLayout';
 import { useTools } from '../store/ToolContext';
 import { Type, Hash, Trash2, Copy } from 'lucide-react';
 
@@ -39,10 +39,11 @@ const TextCommonTool: React.FC = () => {
     };
 
     return (
-        <ToolCard title={getToolTitle()} description="简单的文本处理工具，包含大小写转换、字数统计等功能。">
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', minHeight: 0 }}>
-
-                <div style={{ display: 'flex', gap: '1rem' }}>
+        <ToolLayout
+            title={getToolTitle()}
+            description="简单的文本处理工具，包含大小写转换、字数统计等功能。"
+            header={
+                <>
                     <button onClick={handleProcess} style={{ background: 'var(--accent-gradient)', color: 'white', padding: '10px 24px', borderRadius: '10px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {activeTool === 'count' ? <Hash size={18} /> : <Type size={18} />} 统计/处理
                     </button>
@@ -56,29 +57,25 @@ const TextCommonTool: React.FC = () => {
                     <button onClick={() => { setInput(''); setOutput(''); }} style={{ color: 'var(--error-color)', fontSize: '0.85rem' }}>
                         <Trash2 size={16} /> 清空
                     </button>
-                </div>
-
-                <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', minHeight: 0 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>源文本</span>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={input} onChange={v => setInput(v || '')} language="text" />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>结果</span>
-                            <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <Copy size={14} /> 复制
-                            </button>
-                        </div>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={output} readOnly language="text" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ToolCard>
+                </>
+            }
+            splitId="text-common-tool"
+        >
+            <ToolPane title="源文本" style={{ paddingRight: '4px' }}>
+                <MonacoEditor value={input} onChange={v => setInput(v || '')} language="text" />
+            </ToolPane>
+            <ToolPane
+                title="结果"
+                style={{ paddingLeft: '4px' }}
+                extra={
+                    <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Copy size={14} /> 复制
+                    </button>
+                }
+            >
+                <MonacoEditor value={output} readOnly language="text" />
+            </ToolPane>
+        </ToolLayout>
     );
 };
 

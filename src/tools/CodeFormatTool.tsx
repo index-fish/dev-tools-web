@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import ToolCard from '../components/ToolCard';
 import MonacoEditor from '../components/Editor';
 import { useTools } from '../store/ToolContext';
+import { ToolLayout, ToolPane } from '../components/ToolLayout';
 import { Trash2, Copy, Check } from 'lucide-react';
 
 const CodeFormatTool: React.FC = () => {
@@ -80,9 +80,11 @@ const CodeFormatTool: React.FC = () => {
     };
 
     return (
-        <ToolCard title={getToolTitle()} description={`清理并美化您的 ${getLanguage().toUpperCase()} 代码，提高可读性。`}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', minHeight: 0 }}>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+        <ToolLayout
+            title={getToolTitle()}
+            description={`清理并美化您的 ${getLanguage().toUpperCase()} 代码，提高可读性。`}
+            header={
+                <>
                     <button onClick={handleFormat} style={{ background: 'var(--accent-gradient)', color: 'white', padding: '10px 24px', borderRadius: '10px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Check size={18} /> 执行格式化
                     </button>
@@ -90,29 +92,25 @@ const CodeFormatTool: React.FC = () => {
                     <button onClick={() => { setInput(''); setOutput(''); }} style={{ color: 'var(--error-color)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <Trash2 size={16} /> 清空
                     </button>
-                </div>
-
-                <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', minHeight: 0 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>源文本</span>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={input} onChange={v => setInput(v || '')} language={getLanguage()} />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>格式化结果</span>
-                            <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <Copy size={14} /> 复制
-                            </button>
-                        </div>
-                        <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
-                            <MonacoEditor value={output} readOnly language={getLanguage()} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ToolCard>
+                </>
+            }
+            splitId="code-format-tool"
+        >
+            <ToolPane title="源文本" style={{ paddingRight: '4px' }}>
+                <MonacoEditor value={input} onChange={v => setInput(v || '')} language={getLanguage()} />
+            </ToolPane>
+            <ToolPane
+                title="格式化结果"
+                style={{ paddingLeft: '4px' }}
+                extra={
+                    <button onClick={() => navigator.clipboard.writeText(output)} style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Copy size={14} /> 复制
+                    </button>
+                }
+            >
+                <MonacoEditor value={output} readOnly language={getLanguage()} />
+            </ToolPane>
+        </ToolLayout>
     );
 };
 
