@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
+import { useTools } from '../store/ToolContext';
 
 // Use local or specific version of monaco if needed, 
 // for now let it load from CDN but we can optimize later.
@@ -22,6 +23,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
     theme
 }) => {
     const monaco = useMonaco();
+    const { theme: contextTheme } = useTools();
 
     useEffect(() => {
         if (monaco) {
@@ -48,7 +50,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
         }
     }, [monaco]);
 
-    const activeTheme = theme || (document.documentElement.dataset.theme === 'light' ? 'custom-light' : 'custom-dark');
+    const activeTheme = theme || (contextTheme === 'light' ? 'custom-light' : 'custom-dark');
 
     return (
         <Editor
