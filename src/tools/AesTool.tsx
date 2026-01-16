@@ -13,10 +13,25 @@ const AesTool: React.FC = () => {
     const [mode, setMode] = useState('CBC');
     const [padding, setPadding] = useState('Pkcs7');
     const [outFormat, setOutFormat] = useState('base64');
+    const [keyFormat, setKeyFormat] = useState('utf8');
+    const [ivFormat, setIvFormat] = useState('utf8');
+
+    const parseData = (data: string, format: string) => {
+        if (!data) return undefined;
+        try {
+            switch (format) {
+                case 'hex': return CryptoJS.enc.Hex.parse(data);
+                case 'base64': return CryptoJS.enc.Base64.parse(data);
+                default: return CryptoJS.enc.Utf8.parse(data);
+            }
+        } catch (e) {
+            return CryptoJS.enc.Utf8.parse(data);
+        }
+    };
 
     const getOptions = () => {
         return {
-            iv: iv ? CryptoJS.enc.Utf8.parse(iv) : undefined,
+            iv: parseData(iv, ivFormat),
             mode: (CryptoJS.mode as any)[mode],
             padding: (CryptoJS.pad as any)[padding]
         };
@@ -27,7 +42,8 @@ const AesTool: React.FC = () => {
     const handleEncrypt = () => {
         try {
             if (!input || !key) return;
-            const keyBytes = CryptoJS.enc.Utf8.parse(key);
+            const keyBytes = parseData(key, keyFormat);
+            if (!keyBytes) return;
             let encrypted;
             switch (activeTool) {
                 case 'aes': encrypted = CryptoJS.AES.encrypt(input, keyBytes, getOptions()); break;
@@ -46,7 +62,8 @@ const AesTool: React.FC = () => {
     const handleDecrypt = () => {
         try {
             if (!input || !key) return;
-            const keyBytes = CryptoJS.enc.Utf8.parse(key);
+            const keyBytes = parseData(key, keyFormat);
+            if (!keyBytes) return;
             const cipherParams = CryptoJS.lib.CipherParams.create({
                 ciphertext: outFormat === 'hex' ? CryptoJS.enc.Hex.parse(input) : CryptoJS.enc.Base64.parse(input)
             });
@@ -90,12 +107,23 @@ const AesTool: React.FC = () => {
                     borderRadius: '12px', border: '1px solid var(--border-color)'
                 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>密钥 (Key)</label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>密钥 (Key)</label>
+                            <select
+                                value={keyFormat}
+                                onChange={(e) => setKeyFormat(e.target.value)}
+                                style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                                <option value="utf8">UTF8</option>
+                                <option value="hex">HEX</option>
+                                <option value="base64">BASE64</option>
+                            </select>
+                        </div>
                         <input
                             type="text"
                             value={key}
                             onChange={(e) => setKey(e.target.value)}
-                            placeholder="16/24/32位密钥"
+                            placeholder={keyFormat === 'utf8' ? "16/24/32位密钥" : `输入 ${keyFormat.toUpperCase()} 格式密钥`}
                             style={{
                                 width: '100%', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
                                 color: 'var(--text-primary)', padding: '10px 12px', borderRadius: '8px', fontSize: '0.9rem'
@@ -103,12 +131,23 @@ const AesTool: React.FC = () => {
                         />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>向量 (IV)</label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>向量 (IV)</label>
+                            <select
+                                value={ivFormat}
+                                onChange={(e) => setIvFormat(e.target.value)}
+                                style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                                <option value="utf8">UTF8</option>
+                                <option value="hex">HEX</option>
+                                <option value="base64">BASE64</option>
+                            </select>
+                        </div>
                         <input
                             type="text"
                             value={iv}
                             onChange={(e) => setIv(e.target.value)}
-                            placeholder="16位向量"
+                            placeholder={ivFormat === 'utf8' ? "16位向量" : `输入 ${ivFormat.toUpperCase()} 格式向量`}
                             style={{
                                 width: '100%', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
                                 color: 'var(--text-primary)', padding: '10px 12px', borderRadius: '8px', fontSize: '0.9rem'

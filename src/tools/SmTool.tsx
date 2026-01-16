@@ -12,6 +12,35 @@ const SmTool: React.FC = () => {
     const [iv, setIv] = useState('');
     const [publicKey, setPublicKey] = useState('');
     const [privateKey, setPrivateKey] = useState('');
+    const [keyFormat, setKeyFormat] = useState('hex');
+    const [ivFormat, setIvFormat] = useState('hex');
+
+    const parseToHex = (data: string, format: string) => {
+        if (!data) return '';
+        if (format === 'hex') return data;
+        try {
+            if (format === 'base64') {
+                const binary = atob(data);
+                let hex = '';
+                for (let i = 0; i < binary.length; i++) {
+                    const h = binary.charCodeAt(i).toString(16);
+                    hex += h.length === 1 ? '0' + h : h;
+                }
+                return hex;
+            }
+            if (format === 'utf8') {
+                let hex = '';
+                for (let i = 0; i < data.length; i++) {
+                    const h = data.charCodeAt(i).toString(16);
+                    hex += h.length === 1 ? '0' + h : h;
+                }
+                return hex;
+            }
+        } catch (e) {
+            return '';
+        }
+        return '';
+    };
 
     const handleSm3 = () => {
         if (!input) return;
@@ -26,9 +55,12 @@ const SmTool: React.FC = () => {
     const handleSm4Encrypt = () => {
         if (!input || !key) return;
         try {
+            const hexKey = parseToHex(key, keyFormat);
+            const hexIv = parseToHex(iv, ivFormat);
+            if (!hexKey) throw new Error('无效的密钥格式');
             const options: any = { padding: 'pkcs7' };
-            if (iv) options.iv = iv;
-            const encrypted = sm4.encrypt(input, key, options);
+            if (hexIv) options.iv = hexIv;
+            const encrypted = sm4.encrypt(input, hexKey, options);
             setOutput(encrypted);
         } catch (e: any) {
             setOutput(`SM4 加密失败: ${e.message}`);
@@ -38,9 +70,12 @@ const SmTool: React.FC = () => {
     const handleSm4Decrypt = () => {
         if (!input || !key) return;
         try {
+            const hexKey = parseToHex(key, keyFormat);
+            const hexIv = parseToHex(iv, ivFormat);
+            if (!hexKey) throw new Error('无效的密钥格式');
             const options: any = { padding: 'pkcs7' };
-            if (iv) options.iv = iv;
-            const decrypted = sm4.decrypt(input, key, options);
+            if (hexIv) options.iv = hexIv;
+            const decrypted = sm4.decrypt(input, hexKey, options);
             setOutput(decrypted);
         } catch (e: any) {
             setOutput(`SM4 解密失败: ${e.message}`);
@@ -118,12 +153,34 @@ const SmTool: React.FC = () => {
                     {tab === 'sm4' && (
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '1rem', alignItems: 'flex-end' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>128位密钥 (Hex)</label>
-                                <input type="text" value={key} onChange={e => setKey(e.target.value)} placeholder="32位十六进制字符串" style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '10px', borderRadius: '8px' }} />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>密钥 (Key)</label>
+                                    <select
+                                        value={keyFormat}
+                                        onChange={(e) => setKeyFormat(e.target.value)}
+                                        style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+                                    >
+                                        <option value="hex">HEX</option>
+                                        <option value="base64">BASE64</option>
+                                        <option value="utf8">UTF8</option>
+                                    </select>
+                                </div>
+                                <input type="text" value={key} onChange={e => setKey(e.target.value)} placeholder={keyFormat === 'hex' ? "32位十六进制字符串" : `输入 ${keyFormat.toUpperCase()} 格式密钥`} style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '10px', borderRadius: '8px' }} />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>128位向量 (Hex, 可选)</label>
-                                <input type="text" value={iv} onChange={e => setIv(e.target.value)} placeholder="32位十六进制字符串" style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '10px', borderRadius: '8px' }} />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>向量 (IV)</label>
+                                    <select
+                                        value={ivFormat}
+                                        onChange={(e) => setIvFormat(e.target.value)}
+                                        style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+                                    >
+                                        <option value="hex">HEX</option>
+                                        <option value="base64">BASE64</option>
+                                        <option value="utf8">UTF8</option>
+                                    </select>
+                                </div>
+                                <input type="text" value={iv} onChange={e => setIv(e.target.value)} placeholder={ivFormat === 'hex' ? "32位十六进制字符串" : `输入 ${ivFormat.toUpperCase()} 格式向量`} style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '10px', borderRadius: '8px' }} />
                             </div>
                             <button onClick={generateSm4Key} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)' }} title="生成随机 Hex 密钥">
                                 <RefreshCw size={18} />
