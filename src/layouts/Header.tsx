@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTools } from '../store/ToolContext';
 import { SECTIONS } from '../store/ToolMetadata';
-import { Sun, Moon, Github, Right } from '@icon-park/react';
+import { Sun, Moon, Github, Right, MenuUnfold, MenuFold } from '@icon-park/react';
 import styles from './Header.module.css';
 
 const Header: React.FC = () => {
-    const { activeTool, theme, toggleTheme } = useTools();
+    const { activeTool, theme, toggleTheme, sidebarCollapsed, setSidebarCollapsed } = useTools();
 
     // Find tool name and section name from metadata
     const getToolMetadata = () => {
@@ -21,6 +21,13 @@ const Header: React.FC = () => {
     return (
         <header className={styles.header}>
             <div className={styles.titleInfo}>
+                <button
+                    className={styles.toggleBtn}
+                    onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                    title={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+                >
+                    {sidebarCollapsed ? <MenuUnfold size={20} /> : <MenuFold size={20} />}
+                </button>
                 <div className={styles.breadcrumb}>
                     <span>{sectionName}</span>
                     <Right size={14} className={styles.breadcrumbSeparator} />

@@ -16,6 +16,21 @@
     gap: 1.25rem;
 }
 
+.toggleBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.toggleBtn:hover {
+    color: var(--accent-primary);
+    background: var(--hover-bg);
+}
+
 .breadcrumb {
     display: flex;
     align-items: center;

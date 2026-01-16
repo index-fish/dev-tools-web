@@ -10,7 +10,8 @@ const Sidebar: React.FC = () => {
     const {
         activeTool, setActiveTool,
         sectionOrder, setSectionOrder,
-        collapsedSections, toggleSection
+        collapsedSections, toggleSection,
+        sidebarCollapsed
     } = useTools();
 
     const onDragEnd = (result: DropResult) => {
@@ -22,7 +23,7 @@ const Sidebar: React.FC = () => {
     };
 
     return (
-        <aside className={styles.sidebar}>
+        <aside className={clsx(styles.sidebar, sidebarCollapsed && styles.collapsedSidebar)}>
             <div className={styles.header}>
                 <div className={styles.logo}>
                     <span className={styles.logoIcon}>
@@ -72,7 +73,7 @@ const Sidebar: React.FC = () => {
                                                         </div>
                                                     </div>
 
-                                                    {!isCollapsed && (
+                                                    {!isCollapsed && !sidebarCollapsed && (
                                                         <div className={styles.items}>
                                                             {section.tools.map(tool => (
                                                                 <button

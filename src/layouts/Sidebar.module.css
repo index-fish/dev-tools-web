@@ -8,6 +8,11 @@
     flex-shrink: 0;
     z-index: 10;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapsedSidebar {
+    width: 64px;
 }
 
 .header {
@@ -38,17 +43,34 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.collapsedSidebar .logoText {
+    opacity: 0;
+    width: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+}
+
+.collapsedSidebar .header {
+    padding: 0;
+    justify-content: center;
+}
+
+.nav::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
 }
 
 .nav {
     flex: 1;
     overflow-y: auto;
     padding: 1.25rem 0.75rem;
-}
-
-/* Custom scrollbar for nav */
-.nav::-webkit-scrollbar {
-    width: 4px;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
 }
 
 .section {
@@ -118,6 +140,25 @@
     font-weight: 600;
     font-size: 0.9rem;
     color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.collapsedSidebar .name,
+.collapsedSidebar .chevron,
+.collapsedSidebar .handle {
+    display: none;
+}
+
+.collapsedSidebar .sectionContent {
+    justify-content: center;
+    padding: 0.65rem 0;
+}
+
+.collapsedSidebar .icon {
+    margin: 0;
+    width: 100%;
 }
 
 .chevron {

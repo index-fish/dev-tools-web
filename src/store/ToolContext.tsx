@@ -11,6 +11,8 @@ interface ToolContextType {
     setSectionOrder: (order: string[]) => void;
     collapsedSections: string[];
     toggleSection: (id: string) => void;
+    sidebarCollapsed: boolean;
+    setSidebarCollapsed: (collapsed: boolean) => void;
 }
 
 const ToolContext = createContext<ToolContextType | undefined>(undefined);
@@ -40,6 +42,10 @@ export const ToolProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return saved ? JSON.parse(saved) : [];
     });
 
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        return localStorage.getItem('sidebarCollapsed') === 'true';
+    });
+
     useEffect(() => {
         localStorage.setItem('activeTool', activeTool);
     }, [activeTool]);
@@ -66,12 +72,18 @@ export const ToolProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
     };
 
+    const handleSetSidebarCollapsed = (collapsed: boolean) => {
+        setSidebarCollapsed(collapsed);
+        localStorage.setItem('sidebarCollapsed', String(collapsed));
+    };
+
     return (
         <ToolContext.Provider value={{
             activeTool, setActiveTool,
             theme, toggleTheme,
             sectionOrder, setSectionOrder,
-            collapsedSections, toggleSection
+            collapsedSections, toggleSection,
+            sidebarCollapsed, setSidebarCollapsed: handleSetSidebarCollapsed
         }}>
             {children}
         </ToolContext.Provider>
