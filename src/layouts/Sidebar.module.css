@@ -208,12 +208,12 @@
 .itemActive::before {
     content: '';
     position: absolute;
-    left: 0.75rem;
+    left: 0.25rem;
     top: 50%;
     transform: translateY(-50%);
     width: 4px;
-    height: 4px;
-    border-radius: 50%;
+    height: 18px;
+    border-radius: 4px;
     background: var(--accent-primary);
-    box-shadow: 0 0 8px var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-primary);
 }
